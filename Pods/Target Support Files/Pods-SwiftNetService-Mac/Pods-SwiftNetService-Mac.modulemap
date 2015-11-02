@@ -1,0 +1,6 @@
+framework module Pods_SwiftNetService_Mac {
+  umbrella header "Pods-SwiftNetService-Mac-umbrella.h"
+
+  export *
+  module * { export * }
+}
