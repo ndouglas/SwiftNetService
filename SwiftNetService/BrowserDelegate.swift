@@ -10,26 +10,30 @@ import Foundation
 import ReactiveCocoa
 
 public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
-    public typealias ServicesType = [NSNetService]
-    var services : ServicesType
-    var observer : Event<ServicesType, NSError>.Sink
-    var signal : Signal<ServicesType, NSError>
 
-    init(signal : Signal<[NSNetService], NSError>, observer : Event<[NSNetService], NSError>.Sink) {
+    public typealias ServicesType = [NSNetService]
+    public typealias ServicesSignalType = Signal<ServicesType, NSError>
+    public typealias ServicesObserverType = Event<ServicesType, NSError>.Sink
+    
+    public var servicesSignal : ServicesSignalType
+    var servicesObserver : ServicesObserverType
+    var services : ServicesType
+
+    init(servicesSignal : ServicesSignalType, servicesObserver : ServicesObserverType) {
         self.services = []
-        self.signal = signal
-        self.observer = observer
+        self.servicesSignal = servicesSignal
+        self.servicesObserver = servicesObserver
     }
 
     public override convenience init() {
-        let (signal, observer) = Signal<[NSNetService], NSError>.pipe()
-        self.init(signal: signal, observer: observer)
+        let (servicesSignal, servicesObserver) = ServicesSignalType.pipe()
+        self.init(servicesSignal: servicesSignal, servicesObserver: servicesObserver)
     }
     
     public func netServiceBrowser(browser: NSNetServiceBrowser, didFindService service: NSNetService, moreComing: Bool) {
         self.services.append(service);
         if (!moreComing) {
-            sendNext(self.observer, self.services)
+            sendNext(self.servicesObserver, self.services)
         }
     }
 
@@ -38,12 +42,12 @@ public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
             self.services.removeAtIndex(index);
         }
         if (!moreComing) {
-            sendNext(self.observer, self.services)
+            sendNext(self.servicesObserver, self.services)
         }
     }
     
     public func netServiceBrowser(browser: NSNetServiceBrowser, didNotSearch errorDict: [String : NSNumber]) {
-        sendError(self.observer, errorForErrorDictionary(errorDict));
+        sendError(self.servicesObserver, errorForErrorDictionary(errorDict));
     }
 
 }
