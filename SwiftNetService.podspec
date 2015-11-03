@@ -36,13 +36,13 @@ Pod::Spec.new do |s|
 					:tag => "0.0.1"
 				}
   s.subspec 'Core' do |cs|
-	cs.exclude_files       	= "*Tests.swift"
-	cs.source_files         = "*.swift"
+	cs.exclude_files       	= "SwiftNetService/*Tests.swift"
+	cs.source_files         = "SwiftNetService/*.swift"
 	cs.framework            = "Foundation"
 	cs.dependency           "ReactiveCocoa"
   end
   s.subspec 'Tests' do |ts|
-	ts.source_files         = "*Tests.swift"
+	ts.source_files         = "SwiftNetService/*Tests.swift"
 	ts.frameworks           = "Foundation", "XCTest"
 	ts.dependency           "SwiftNetService/Core"
   end
