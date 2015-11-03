@@ -13,6 +13,12 @@
 		D8FF2C301BE7EA6C00BE124E /* SwiftNetService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8FF2C261BE7EA6B00BE124E /* SwiftNetService.framework */; settings = {ASSET_TAGS = (); }; };
 		D8FF2C3D1BE7F26B00BE124E /* SwiftNetService.h in Headers */ = {isa = PBXBuildFile; fileRef = D8FF2C091BE7E98400BE124E /* SwiftNetService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D8FF2C3E1BE7F27100BE124E /* SwiftNetServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C151BE7E98400BE124E /* SwiftNetServiceTests.swift */; settings = {ASSET_TAGS = (); }; };
+		D8FF2C431BE7F45C00BE124E /* NSNetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C421BE7F45C00BE124E /* NSNetService.swift */; settings = {ASSET_TAGS = (); }; };
+		D8FF2C441BE7F45C00BE124E /* NSNetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C421BE7F45C00BE124E /* NSNetService.swift */; settings = {ASSET_TAGS = (); }; };
+		D8FF2C461BE7F4BE00BE124E /* NSNetServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C451BE7F4BE00BE124E /* NSNetServiceTests.swift */; settings = {ASSET_TAGS = (); }; };
+		D8FF2C481BE7F50400BE124E /* NSNetServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C451BE7F4BE00BE124E /* NSNetServiceTests.swift */; settings = {ASSET_TAGS = (); }; };
+		D8FF2C4A1BE7F96900BE124E /* BrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C491BE7F96900BE124E /* BrowserDelegate.swift */; settings = {ASSET_TAGS = (); }; };
+		D8FF2C4B1BE7F96900BE124E /* BrowserDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C491BE7F96900BE124E /* BrowserDelegate.swift */; settings = {ASSET_TAGS = (); }; };
 		E4B3876253030F04A51D44A5 /* Pods_SwiftNetService_Mac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2E768998B367766A89633BD /* Pods_SwiftNetService_Mac.framework */; };
 		F10C89E49BB1DE8B305B334A /* Pods_SwiftNetService_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E7EF4F2B99B5755A388ECA7 /* Pods_SwiftNetService_iOS.framework */; };
 /* End PBXBuildFile section */
@@ -48,6 +54,9 @@
 		D8FF2C171BE7E98400BE124E /* Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
 		D8FF2C261BE7EA6B00BE124E /* SwiftNetService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftNetService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8FF2C2F1BE7EA6B00BE124E /* SwiftNetServiceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftNetServiceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D8FF2C421BE7F45C00BE124E /* NSNetService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSNetService.swift; sourceTree = "<group>"; };
+		D8FF2C451BE7F4BE00BE124E /* NSNetServiceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSNetServiceTests.swift; sourceTree = "<group>"; };
+		D8FF2C491BE7F96900BE124E /* BrowserDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserDelegate.swift; sourceTree = "<group>"; };
 		FC00258926BA298C46990A89 /* Pods-SwiftNetService-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftNetService-iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftNetService-iOS/Pods-SwiftNetService-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -133,6 +142,8 @@
 		D8FF2C081BE7E98400BE124E /* SwiftNetService */ = {
 			isa = PBXGroup;
 			children = (
+				D8FF2C421BE7F45C00BE124E /* NSNetService.swift */,
+				D8FF2C491BE7F96900BE124E /* BrowserDelegate.swift */,
 				D8FF2C091BE7E98400BE124E /* SwiftNetService.h */,
 			);
 			path = SwiftNetService;
@@ -141,6 +152,7 @@
 		D8FF2C141BE7E98400BE124E /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				D8FF2C451BE7F4BE00BE124E /* NSNetServiceTests.swift */,
 				D8FF2C151BE7E98400BE124E /* SwiftNetServiceTests.swift */,
 			);
 			name = Tests;
@@ -397,6 +409,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8FF2C431BE7F45C00BE124E /* NSNetService.swift in Sources */,
+				D8FF2C4A1BE7F96900BE124E /* BrowserDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,6 +418,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8FF2C461BE7F4BE00BE124E /* NSNetServiceTests.swift in Sources */,
 				D8FF2C161BE7E98400BE124E /* SwiftNetServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -412,6 +427,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8FF2C441BE7F45C00BE124E /* NSNetService.swift in Sources */,
+				D8FF2C4B1BE7F96900BE124E /* BrowserDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +436,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8FF2C481BE7F50400BE124E /* NSNetServiceTests.swift in Sources */,
 				D8FF2C3E1BE7F27100BE124E /* SwiftNetServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
