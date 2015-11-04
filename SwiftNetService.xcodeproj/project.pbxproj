@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		D856BC061BE94912002456F5 /* BrowserDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D856BC051BE94912002456F5 /* BrowserDelegateTests.swift */; settings = {ASSET_TAGS = (); }; };
-		D856BC071BE94912002456F5 /* BrowserDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D856BC051BE94912002456F5 /* BrowserDelegateTests.swift */; settings = {ASSET_TAGS = (); }; };
 		D8FF2C0A1BE7E98400BE124E /* SwiftNetService.h in Headers */ = {isa = PBXBuildFile; fileRef = D8FF2C091BE7E98400BE124E /* SwiftNetService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D8FF2C111BE7E98400BE124E /* SwiftNetService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8FF2C061BE7E98400BE124E /* SwiftNetService.framework */; settings = {ASSET_TAGS = (); }; };
 		D8FF2C161BE7E98400BE124E /* SwiftNetServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8FF2C151BE7E98400BE124E /* SwiftNetServiceTests.swift */; };
@@ -443,7 +442,6 @@
 			files = (
 				D8FF2C481BE7F50400BE124E /* NSNetServiceTests.swift in Sources */,
 				D8FF2C3E1BE7F27100BE124E /* SwiftNetServiceTests.swift in Sources */,
-				D856BC071BE94912002456F5 /* BrowserDelegateTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
