@@ -26,6 +26,10 @@ class ServicePublicationDelegate : NSObject, NSNetServiceDelegate {
         self.expectation.fulfill()
         NSLog("Did publish service: \(sender)")
     }
+    
+    @objc func netServiceDidStop(sender: NSNetService) {
+        NSLog("Did stop publishing service: \(sender)")
+    }
 
     @objc func netServiceWillPublish(sender: NSNetService) {
         NSLog("Will publish service: \(sender)")
