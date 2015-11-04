@@ -56,6 +56,12 @@ class TestService {
         self.service.delegate = self.publicationDelegate
         self.service.publish()
     }
+
+    func stopAndFulfillExpectation(expectation: XCTestExpectation) {
+        self.publicationDelegate = ServicePublicationDelegate(expectation: expectation)
+        self.service.delegate = self.publicationDelegate
+        self.service.stop()
+    }
     
     func discoverAndFulfillExpectation(expectation: XCTestExpectation) {
         self.browser = NSNetServiceBrowser()
