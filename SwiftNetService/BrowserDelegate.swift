@@ -16,10 +16,10 @@ public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
     public typealias ServicesObserverType = Event<ServicesType, NSError>.Sink
     
     public var servicesSignal : ServicesSignalType
-    var servicesObserver : ServicesObserverType
-    var services : ServicesType
+    public var services : ServicesType
+    private var servicesObserver : ServicesObserverType
 
-    init(servicesSignal : ServicesSignalType, servicesObserver : ServicesObserverType) {
+    internal init(servicesSignal : ServicesSignalType, servicesObserver : ServicesObserverType) {
         self.services = []
         self.servicesSignal = servicesSignal
         self.servicesObserver = servicesObserver

@@ -7,9 +7,11 @@
 //
 
 import XCTest
+import ReactiveCocoa
+
 @testable import SwiftNetService
 
-class ServiceDelegate : NSObject, NSNetServiceDelegate {
+class ServicePublicationDelegate : NSObject, NSNetServiceDelegate {
     var expectation : XCTestExpectation
     
     init(expectation : XCTestExpectation) {
@@ -35,7 +37,9 @@ class TestService {
     var UUID : String
     var type : String
     var service : NSNetService
-    var delegate : ServiceDelegate?
+    var publicationDelegate : ServicePublicationDelegate?
+    var browser : NSNetServiceBrowser?
+    var discoveryDelegate : BrowserDelegate?
     
     init(port : Int32) {
         self.UUID = NSUUID().UUIDString
@@ -44,11 +48,23 @@ class TestService {
     }
     
     func publishAndFulfillExpectation(expectation: XCTestExpectation) {
-        self.delegate = ServiceDelegate(expectation: expectation)
-        self.service.delegate = self.delegate
+        self.publicationDelegate = ServicePublicationDelegate(expectation: expectation)
+        self.service.delegate = self.publicationDelegate
         self.service.publish()
     }
     
+    func discoverAndFulfillExpectation(expectation: XCTestExpectation) {
+        self.browser = NSNetServiceBrowser()
+        self.discoveryDelegate = BrowserDelegate()
+        self.browser!.delegate = self.discoveryDelegate
+        self.discoveryDelegate?.servicesSignal.observeNext({ (services: [NSNetService]) -> () in
+            if let theService = services.filter({ $0.name == self.UUID }).first {
+                NSLog("Did discover service: \(theService)")
+                expectation.fulfill()
+            }
+        })
+        self.browser!.searchForServicesOfType(self.type, inDomain: "local")
+    }
 }
 
 
@@ -62,13 +78,19 @@ class BrowserDelegateTests: XCTestCase {
         super.tearDown()
     }
     
-    func testBrowserDelegate() {
+    func testBrowserDelegateDiscovery() {
         // We're going to publish a net service and see if we find it.
         let myTestService = TestService(port: 2015)
         let expectation = self.expectationWithDescription("published")
         myTestService.publishAndFulfillExpectation(expectation)
-        self.waitForExpectationsWithTimeout(5.0, handler: nil)
+        self.waitForExpectationsWithTimeout(2.5, handler: nil)
         // Getting this far means that the service was created and published successfully.
+        
+        // Next, let's start up a browser and try to find the service.
+        let expectation2 = self.expectationWithDescription("found")
+        myTestService.discoverAndFulfillExpectation(expectation2)
+        self.waitForExpectationsWithTimeout(2.5, handler: nil)
+        // Passing means that the service was successfully discovered.
     }
    
     
