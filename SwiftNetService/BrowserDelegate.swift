@@ -9,15 +9,16 @@
 import Foundation
 import ReactiveCocoa
 
-public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
+public typealias ServicesType = [NSNetService]
+public typealias ServicesSignalType = Signal<ServicesType, NSError>
+public typealias ServicesObserverType = Event<ServicesType, NSError>.Sink
 
-    public typealias ServicesType = [NSNetService]
-    public typealias ServicesSignalType = Signal<ServicesType, NSError>
-    public typealias ServicesObserverType = Event<ServicesType, NSError>.Sink
+public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
     
     public var servicesSignal : ServicesSignalType
     public var services : ServicesType
     private var servicesObserver : ServicesObserverType
+    public var isSearching : Bool = false
 
     internal init(servicesSignal : ServicesSignalType, servicesObserver : ServicesObserverType) {
         self.services = []
@@ -48,6 +49,14 @@ public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
     
     public func netServiceBrowser(browser: NSNetServiceBrowser, didNotSearch errorDict: [String : NSNumber]) {
         sendError(self.servicesObserver, errorForErrorDictionary(errorDict));
+    }
+    
+    public func netServiceBrowserWillSearch(browser: NSNetServiceBrowser) {
+        self.isSearching = true
+    }
+
+    public func netServiceBrowserDidStopSearch(browser: NSNetServiceBrowser) {
+        self.isSearching = false
     }
 
 }
