@@ -12,6 +12,7 @@ import ReactiveCocoa
 @testable import SwiftNetService
 
 class ServicePublicationDelegate : NSObject, NSNetServiceDelegate {
+
     var expectation : XCTestExpectation
     
     init(expectation : XCTestExpectation) {
@@ -90,6 +91,7 @@ class BrowserDelegateTests: XCTestCase {
     
     func testBrowserDelegateDiscovery() {
         // We're going to publish a net service and see if we find it.
+        
         let myTestService = TestService(port: 2015)
         let expectation = self.expectationWithDescription("published")
         myTestService.publishAndFulfillExpectation(expectation)
@@ -103,5 +105,32 @@ class BrowserDelegateTests: XCTestCase {
         // Passing means that the service was successfully discovered.
     }
    
+    func testMultipleBrowserDelegateDiscovery() {
+        // We're going to publish several net services and see if we find them.
+        
+        var myTestServices : [TestService] = []
+        
+        for index in 0...10 {
+            myTestServices.append(TestService(port: 2015+index))
+        }
+        let expectations = myTestServices.map { (service: TestService) -> XCTestExpectation in
+            return self.expectationWithDescription("published service \(service.UUID)")
+        }
+        for index in 0...myTestServices.count-1 {
+            myTestServices[index].publishAndFulfillExpectation(expectations[index])
+        }
+        self.waitForExpectationsWithTimeout(2.5, handler: nil)
+        // Getting this far means that the services were created and published successfully.
+
+        // Next, let's start up browsers and try to find the services.
+        let expectations2 = myTestServices.map { (service: TestService) -> XCTestExpectation in
+            return self.expectationWithDescription("found service \(service.UUID)")
+        }
+        for index in 0...myTestServices.count-1 {
+            myTestServices[index].discoverAndFulfillExpectation(expectations2[index])
+        }
+        self.waitForExpectationsWithTimeout(2.5, handler: nil)
+        // Passing means that the services were successfully discovered.
+    }
     
 }
