@@ -9,16 +9,16 @@
 import Foundation
 import ReactiveCocoa
 
-public typealias ServicesType = [NSNetService]
-public typealias ServicesSignalType = Signal<ServicesType, NSError>
-public typealias ServicesObserverType = Event<ServicesType, NSError>.Sink
+typealias ServicesType = [NSNetService]
+typealias ServicesSignalType = Signal<ServicesType, NSError>
+typealias ServicesObserverType = Event<ServicesType, NSError>.Sink
 
-public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
+class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
     
-    public var servicesSignal : ServicesSignalType
-    public var services : ServicesType
-    private var servicesObserver : ServicesObserverType
-    public var isSearching : Bool = false
+    var servicesSignal : ServicesSignalType
+    var services : ServicesType
+    var servicesObserver : ServicesObserverType
+    var isSearching : Bool = false
 
     internal init(servicesSignal : ServicesSignalType, servicesObserver : ServicesObserverType) {
         self.services = []
@@ -26,19 +26,19 @@ public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
         self.servicesObserver = servicesObserver
     }
 
-    public override convenience init() {
+    override convenience init() {
         let (servicesSignal, servicesObserver) = ServicesSignalType.pipe()
         self.init(servicesSignal: servicesSignal, servicesObserver: servicesObserver)
     }
     
-    public func netServiceBrowser(browser: NSNetServiceBrowser, didFindService service: NSNetService, moreComing: Bool) {
+    func netServiceBrowser(browser: NSNetServiceBrowser, didFindService service: NSNetService, moreComing: Bool) {
         self.services.append(service);
         if (!moreComing) {
             sendNext(self.servicesObserver, self.services)
         }
     }
 
-    public func netServiceBrowser(browser: NSNetServiceBrowser, didRemoveService service: NSNetService, moreComing: Bool) {
+    func netServiceBrowser(browser: NSNetServiceBrowser, didRemoveService service: NSNetService, moreComing: Bool) {
         if let index = self.services.indexOf(service) {
             self.services.removeAtIndex(index);
         }
@@ -47,15 +47,15 @@ public class BrowserDelegate : NSObject, NSNetServiceBrowserDelegate {
         }
     }
     
-    public func netServiceBrowser(browser: NSNetServiceBrowser, didNotSearch errorDict: [String : NSNumber]) {
+    func netServiceBrowser(browser: NSNetServiceBrowser, didNotSearch errorDict: [String : NSNumber]) {
         sendError(self.servicesObserver, errorForErrorDictionary(errorDict));
     }
     
-    public func netServiceBrowserWillSearch(browser: NSNetServiceBrowser) {
+    func netServiceBrowserWillSearch(browser: NSNetServiceBrowser) {
         self.isSearching = true
     }
 
-    public func netServiceBrowserDidStopSearch(browser: NSNetServiceBrowser) {
+    func netServiceBrowserDidStopSearch(browser: NSNetServiceBrowser) {
         self.isSearching = false
     }
 
