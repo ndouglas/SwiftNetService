@@ -78,6 +78,12 @@ extension SignalType where T == SwiftNetService.ServicesType {
     func takeUntilNotContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, E> {
         return self.takeWhile { $0.containsTestService(testService) }
     }
+    
+    func reduceToServiceMatchingTestService(testService: TestService) -> Signal<NSNetService, E> {
+        return self.skipWhileNotContainsTestService(testService)
+            .map { $0.filter({ $0.name == testService.UUID }).first! }
+            .take(1)
+    }
 
 }
 
@@ -86,7 +92,7 @@ class TestService {
     var type : String
     var service : NSNetService
     var serverDelegate : GenericServiceDelegate?
-    var browser : NSNetServiceBrowser?
+    internal var browser : NSNetServiceBrowser?
     var clientDelegate : BrowserDelegate?
     
     init(port : Int32) {
