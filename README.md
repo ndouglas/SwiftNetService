@@ -7,4 +7,4 @@ SwiftNetService is a port of [ReactiveNetService](http://github.com/ndouglas/Rea
 
 This is also a learning project for Swift 2.1 and ReactiveCocoa 4.0.
 
-You can add it to your project using Cocoapods or Carthage.
+You can add it to your project using Cocoapods or Carthage.  Soon.  I think.
