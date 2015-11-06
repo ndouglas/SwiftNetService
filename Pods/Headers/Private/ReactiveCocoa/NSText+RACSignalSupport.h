@@ -1,1 +1,1 @@
-../../../ReactiveCocoa/ReactiveCocoa/Objective-C/NSText+RACSignalSupport.h
+../../../../../ReactiveCocoa/ReactiveCocoa/Objective-C/NSText+RACSignalSupport.h

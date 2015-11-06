@@ -1,1 +1,1 @@
-../../../ReactiveCocoa/ReactiveCocoa/Objective-C/NSObject+RACAppKitBindings.h
+../../../../../ReactiveCocoa/ReactiveCocoa/Objective-C/NSObject+RACAppKitBindings.h
