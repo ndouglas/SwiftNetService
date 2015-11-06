@@ -114,26 +114,51 @@ class ServiceDelegate : NSObject, NSNetServiceDelegate {
 
     func resolveNetService(service: NSNetService, timeout: NSTimeInterval) -> ResolutionSignalType {
         var result : ResolutionSignalType
+        service.delegate = self
         if service.isResolved {
             result = ResolutionSignalType({ observer in
                 sendNext(observer, service)
                 return nil
             })
-        } else {
+        } else if service.resolutionSignal != nil {
             result = service.resolutionSignal
+        } else {
+            let (resolutionSignal, resolutionObserver) = ResolutionSignalType.pipe()
+            service.resolutionSignal = resolutionSignal
+            service.resolutionObserver = resolutionObserver
+            service.resolveWithTimeout(timeout)
+            result = service.resolutionSignal
+        }
+        return result
+    }
+    
+    func monitorNetService(service: NSNetService) -> DictionarySignalType {
+        var result : DictionarySignalType
+        service.delegate = self
+        if service.hasValidTXTRecordData() {
+            result = DictionarySignalType({ observer in
+                sendNext(observer, service)
+                return nil
+            })
+        } else if service.dictionarySignal != nil {
+            result = service.dictionarySignal
+        } else {
+            let (dictionarySignal, dictionaryObserver) = DictionarySignalType.pipe()
+            service.dictionarySignal = dictionarySignal
+            service.dictionaryObserver = dictionaryObserver
+            service.startMonitoring()
+            result = service.dictionarySignal
         }
         return result
     }
 
     func netServiceDidResolveAddress(sender: NSNetService) {
-        sender.isResolved = true
         sendNext(sender.resolutionObserver, sender)
+        sender.isResolved = true
     }
     
     func netService(sender: NSNetService, didUpdateTXTRecordData data: NSData) {
-        if sender.hasValidTXTRecordData() {
-            sendNext(sender.dictionaryObserver, sender)
-        }
+        sendNext(sender.dictionaryObserver, sender)
     }
 
     func netService(sender: NSNetService, didNotResolve errorDict: [String : NSNumber]) {
