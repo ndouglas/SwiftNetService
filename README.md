@@ -5,4 +5,6 @@ If one were to develop a technology built upon automatically and seamlessly conn
 
 SwiftNetService is a port of [ReactiveNetService](http://github.com/ndouglas/ReactiveNetService) to Swift.  It allows easy *observation* of Bonjour/Zeroconf/Avahi/etc services on the local network as they change over time, rather than simply querying for and finding the services on the network at any particular time.
 
-This is also a learning project for Swift 2.1 and ReactiveCocoa 4.0.'
+This is also a learning project for Swift 2.1 and ReactiveCocoa 4.0.
+
+You can add it to your project using Cocoapods or Carthage.
