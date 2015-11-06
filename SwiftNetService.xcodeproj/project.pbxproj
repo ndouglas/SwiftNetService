@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D856BC061BE94912002456F5 /* BrowserDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D856BC051BE94912002456F5 /* BrowserDelegateTests.swift */; };
+		D8758E2E1BEBF9AA000C002A /* ServiceDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8758E2D1BEBF9AA000C002A /* ServiceDelegateTests.swift */; };
 		D8A6F0261BEBBC0500DCA9D4 /* ServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A6F0251BEBBC0500DCA9D4 /* ServiceDelegate.swift */; };
 		D8A6F0271BEBBC0500DCA9D4 /* ServiceDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A6F0251BEBBC0500DCA9D4 /* ServiceDelegate.swift */; };
 		D8FF2C0A1BE7E98400BE124E /* SwiftNetService.h in Headers */ = {isa = PBXBuildFile; fileRef = D8FF2C091BE7E98400BE124E /* SwiftNetService.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -50,6 +51,7 @@
 		B2E768998B367766A89633BD /* Pods_SwiftNetService_Mac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftNetService_Mac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D462712CBE630BCC71B62FC8 /* Pods-SwiftNetService-Mac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftNetService-Mac.release.xcconfig"; path = "Pods/Target Support Files/Pods-SwiftNetService-Mac/Pods-SwiftNetService-Mac.release.xcconfig"; sourceTree = "<group>"; };
 		D856BC051BE94912002456F5 /* BrowserDelegateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrowserDelegateTests.swift; sourceTree = "<group>"; };
+		D8758E2D1BEBF9AA000C002A /* ServiceDelegateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceDelegateTests.swift; sourceTree = "<group>"; };
 		D8A6F0251BEBBC0500DCA9D4 /* ServiceDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServiceDelegate.swift; sourceTree = "<group>"; };
 		D8FF2C061BE7E98400BE124E /* SwiftNetService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftNetService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8FF2C091BE7E98400BE124E /* SwiftNetService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftNetService.h; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 			children = (
 				D8FF2C451BE7F4BE00BE124E /* NSNetServiceTests.swift */,
 				D856BC051BE94912002456F5 /* BrowserDelegateTests.swift */,
+				D8758E2D1BEBF9AA000C002A /* ServiceDelegateTests.swift */,
 				D8FF2C151BE7E98400BE124E /* SwiftNetServiceTests.swift */,
 			);
 			name = Tests;
@@ -426,6 +429,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8758E2E1BEBF9AA000C002A /* ServiceDelegateTests.swift in Sources */,
 				D8FF2C461BE7F4BE00BE124E /* NSNetServiceTests.swift in Sources */,
 				D8FF2C161BE7E98400BE124E /* SwiftNetServiceTests.swift in Sources */,
 				D856BC061BE94912002456F5 /* BrowserDelegateTests.swift in Sources */,
