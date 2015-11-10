@@ -35,17 +35,22 @@ extension SignalProducerType where Value == ServicesType, Error == NSError {
 
 extension NSNetService {
 
+    /// Looks up services on the local network, attempts to resolve
+    /// them, looks up their TXT records, and then passes them back.
     class func resolvedServicesWithTXTRecordsOfType(type: String, inDomain: String, timeout: NSTimeInterval) -> ServicesSignalProducerType {
         return self.resolvedServicesOfType(type, inDomain: inDomain, timeout: timeout)
             .flatMapLookup()
         
     }
 
+    /// Looks up services on the local network, attempts to resolve 
+    /// them, and passes them back after resolution.
     class func resolvedServicesOfType(type: String, inDomain: String, timeout: NSTimeInterval) -> ServicesSignalProducerType {
         return self.servicesOfType(type, inDomain: inDomain)
             .flatMapResolve(timeout)
     }
 
+    /// Looks up services on the local network.
     class func servicesOfType(type: String, inDomain: String) -> ServicesSignalProducerType {
         return ServicesSignalProducerType({ observer, disposable in
                 observer.sendNext([])
@@ -61,6 +66,9 @@ extension NSNetService {
             })
     }
 
+    /// Looks up the TXT record for the specified net service.
+    /// Notice that this will replace the existing service delegate, if 
+    /// there is one and it is not a SwiftNetService ServiceDelegate.
     class func resolveNetService(service: NSNetService, timeout: NSTimeInterval) -> ResolutionSignalProducerType {
         if let theDelegate = service.delegate as? ServiceDelegate {
             return theDelegate.resolveNetService(service, timeout:timeout)
@@ -69,6 +77,9 @@ extension NSNetService {
         }
     }
     
+    /// Looks up the TXT record for the specified net service.
+    /// Notice that this will replace the existing service delegate, if 
+    /// there is one and it is not a SwiftNetService ServiceDelegate.
     class func lookupTXTRecordForNetService(service: NSNetService) -> DictionarySignalProducerType {
         if let theDelegate = service.delegate as? ServiceDelegate {
             return theDelegate.lookupTXTRecordForNetService(service)
