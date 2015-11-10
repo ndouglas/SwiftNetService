@@ -56,32 +56,60 @@ class GenericServiceDelegate : NSObject, NSNetServiceDelegate {
 }
 
 extension Array where Element: NSNetService {
+
     func containsTestService(testService: TestService) -> Bool {
-        return self.filter({ $0.name == testService.UUID }).count > 0
+        return self.filter { $0.name == testService.UUID }.count > 0
     }
+
 }
 
-extension SignalType where T == SwiftNetService.ServicesType {
+extension SignalType where Value == SwiftNetService.ServicesType {
 
-    func skipWhileContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, E> {
+    func skipWhileContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, Error> {
         return self.skipWhile { $0.containsTestService(testService) }
     }
 
-    func skipWhileNotContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, E> {
+    func skipWhileNotContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, Error> {
         return self.skipWhile { !$0.containsTestService(testService) }
     }
 
-    func takeUntilContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, E> {
+    func takeUntilContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, Error> {
         return self.takeWhile { !$0.containsTestService(testService) }
     }
 
-    func takeUntilNotContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, E> {
+    func takeUntilNotContainsTestService(testService: TestService) -> Signal<SwiftNetService.ServicesType, Error> {
         return self.takeWhile { $0.containsTestService(testService) }
     }
     
-    func reduceToServiceMatchingTestService(testService: TestService) -> Signal<NSNetService, E> {
+    func reduceToServiceMatchingTestService(testService: TestService) -> Signal<NSNetService, Error> {
         return self.skipWhileNotContainsTestService(testService)
-            .map { $0.filter({ $0.name == testService.UUID }).first! }
+            .map { services in services.filter { service in service.name == testService.UUID }.first! }
+            .take(1)
+    }
+
+}
+
+extension SignalProducerType where Value == SwiftNetService.ServicesType {
+
+    func skipWhileContainsTestService(testService: TestService) -> SignalProducer<SwiftNetService.ServicesType, Error> {
+        return self.skipWhile { $0.containsTestService(testService) }
+    }
+
+    func skipWhileNotContainsTestService(testService: TestService) -> SignalProducer<SwiftNetService.ServicesType, Error> {
+        return self.skipWhile { !$0.containsTestService(testService) }
+    }
+
+    func takeUntilContainsTestService(testService: TestService) -> SignalProducer<SwiftNetService.ServicesType, Error> {
+        return self.takeWhile { !$0.containsTestService(testService) }
+    }
+
+    func takeUntilNotContainsTestService(testService: TestService) -> SignalProducer<SwiftNetService.ServicesType, Error> {
+        return self.takeWhile { $0.containsTestService(testService) }
+    }
+    
+    func reduceToServiceMatchingTestService(testService: TestService) -> SignalProducer<NSNetService, Error> {
+        return self.skipWhileNotContainsTestService(testService)
+            .map { services in services.filter { service in service.name == testService.UUID }.first! }
             .take(1)
     }
 
@@ -99,6 +127,7 @@ class TestService {
         self.UUID = NSUUID().UUIDString
         self.type = "_\(self.UUID)._tcp"
         self.service = NSNetService(domain: "local", type: self.type, name: self.UUID, port: port)
+        self.service.setTXTRecordData(NSNetService.dataFromTXTRecordDictionary([ "name" : self.UUID.dataUsingEncoding(NSUTF8StringEncoding)!]))
     }
     
     func publishAndFulfillExpectation(expectation: XCTestExpectation) {
@@ -139,15 +168,29 @@ class TestService {
     }
 
     func undiscoverAndFulfillExpectation(expectation: XCTestExpectation) {
-        self.clientDelegate?.servicesSignal
-            .skipWhileContainsTestService(self)
-            .takeUntilNotContainsTestService(self)
-            .observeCompleted { expectation.fulfill() }
         if self.browser == nil {
             self.browser = NSNetServiceBrowser()
             self.clientDelegate = BrowserDelegate()
             self.browser!.delegate = self.clientDelegate
         }
+        self.clientDelegate?.servicesSignal
+            .skipWhileContainsTestService(self)
+            .takeUntilNotContainsTestService(self)
+            .observeCompleted { expectation.fulfill() }
+        if !self.clientDelegate!.isSearching {
+            self.browser!.searchForServicesOfType(self.type, inDomain: "local")
+        }
+    }
+    
+    func findSelfInSignalAndFulfillExpectation(expectation: XCTestExpectation) {
+        if self.browser == nil {
+            self.browser = NSNetServiceBrowser()
+            self.clientDelegate = BrowserDelegate()
+            self.browser!.delegate = self.clientDelegate
+        }
+        self.clientDelegate?.servicesSignal
+            .reduceToServiceMatchingTestService(self)
+            .observeNext { service in expectation.fulfill() }
         if !self.clientDelegate!.isSearching {
             self.browser!.searchForServicesOfType(self.type, inDomain: "local")
         }
@@ -173,13 +216,13 @@ class BrowserDelegateTests: XCTestCase {
         let expectation = self.expectationWithDescription("published")
         myTestService.publishAndFulfillExpectation(expectation)
         self.waitForExpectationsWithTimeout(2.5, handler: nil)
-        // Getting this far means that the service was created and published successfully.
+        // The service was created and published successfully.
         
         // Next, let's start up a browser and try to find the service.
         let expectation2 = self.expectationWithDescription("found")
         myTestService.discoverAndFulfillExpectation(expectation2)
         self.waitForExpectationsWithTimeout(2.5, handler: nil)
-        // Passing means that the service was successfully discovered.
+        // The service was successfully discovered.
     }
 
     func testBrowserDelegateRediscovery() {
@@ -236,7 +279,7 @@ class BrowserDelegateTests: XCTestCase {
         self.waitForExpectationsWithTimeout(2.5, handler: nil)
         // The service's absence was noticed.
 
-        // Passing means that the service transitioned through a few states and was noticed doing so.
+        // The service transitioned through a few states and was noticed doing so.
     }
    
     func testMultipleBrowserDelegateDiscovery() {
@@ -253,7 +296,7 @@ class BrowserDelegateTests: XCTestCase {
             myTestServices[index].publishAndFulfillExpectation(expectations[index])
         }
         self.waitForExpectationsWithTimeout(2.5, handler: nil)
-        // Getting this far means that the services were created and published successfully.
+        // The services were created and published successfully.
 
         // Next, let's start up browsers and try to find the services.
         let expectations2 = myTestServices.map { (service: TestService) -> XCTestExpectation in
@@ -263,7 +306,34 @@ class BrowserDelegateTests: XCTestCase {
             myTestServices[index].discoverAndFulfillExpectation(expectations2[index])
         }
         self.waitForExpectationsWithTimeout(2.5, handler: nil)
-        // Passing means that the services were successfully discovered.
+        // The services were successfully discovered.
+    }
+    
+    func testReduceToServiceMatchingTestService() {
+        // We're going to publish several net services and see if we can find a specific one.
+
+        var myTestServices : [TestService] = []
+        for index in 0...2 {
+            myTestServices.append(TestService(port: 2015+index))
+        }
+        let expectations = myTestServices.map { (service: TestService) -> XCTestExpectation in
+            return self.expectationWithDescription("published service \(service.UUID)")
+        }
+        for index in 0...myTestServices.count-1 {
+            myTestServices[index].publishAndFulfillExpectation(expectations[index])
+        }
+        self.waitForExpectationsWithTimeout(2.5, handler: nil)
+        // The services were created and published successfully.
+
+        // Next, let's start up browsers and try to find the services.
+        let expectations2 = myTestServices.map { (service: TestService) -> XCTestExpectation in
+            return self.expectationWithDescription("found service \(service.UUID)")
+        }
+        for index in 0...myTestServices.count-1 {
+            myTestServices[index].findSelfInSignalAndFulfillExpectation(expectations2[index])
+        }
+        self.waitForExpectationsWithTimeout(5, handler: nil)
+        // The services were successfully discovered.
     }
     
 }
