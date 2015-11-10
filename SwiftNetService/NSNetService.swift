@@ -12,11 +12,11 @@ import ReactiveCocoa
 extension Array where Element: NSNetService {
 
     func mapResolve(timeout: NSTimeInterval) -> [ResolutionSignalProducerType] {
-        return self.map { service in NSNetService.resolveNetService(service, timeout: timeout) }
+        return self.map { service in service.resolve(timeout) }
     }
 
     func mapLookup() -> [ResolutionSignalProducerType] {
-        return self.map { service in NSNetService.lookupTXTRecordForNetService(service) }
+        return self.map { service in service.lookupTXTRecord() }
     }
 
 }
@@ -69,22 +69,22 @@ extension NSNetService {
     /// Looks up the TXT record for the specified net service.
     /// Notice that this will replace the existing service delegate, if 
     /// there is one and it is not a SwiftNetService ServiceDelegate.
-    class func resolveNetService(service: NSNetService, timeout: NSTimeInterval) -> ResolutionSignalProducerType {
-        if let theDelegate = service.delegate as? ServiceDelegate {
-            return theDelegate.resolveNetService(service, timeout:timeout)
+    func resolve(timeout: NSTimeInterval) -> ResolutionSignalProducerType {
+        if let theDelegate = self.delegate as? ServiceDelegate {
+            return theDelegate.resolveNetService(self, timeout:timeout)
         } else {
-            return ServiceDelegate().resolveNetService(service, timeout:timeout)
+            return ServiceDelegate().resolveNetService(self, timeout:timeout)
         }
     }
     
     /// Looks up the TXT record for the specified net service.
     /// Notice that this will replace the existing service delegate, if 
     /// there is one and it is not a SwiftNetService ServiceDelegate.
-    class func lookupTXTRecordForNetService(service: NSNetService) -> DictionarySignalProducerType {
-        if let theDelegate = service.delegate as? ServiceDelegate {
-            return theDelegate.lookupTXTRecordForNetService(service)
+    func lookupTXTRecord() -> DictionarySignalProducerType {
+        if let theDelegate = self.delegate as? ServiceDelegate {
+            return theDelegate.lookupTXTRecordForNetService(self)
         } else {
-            return ServiceDelegate().lookupTXTRecordForNetService(service)
+            return ServiceDelegate().lookupTXTRecordForNetService(self)
         }
     }
 
