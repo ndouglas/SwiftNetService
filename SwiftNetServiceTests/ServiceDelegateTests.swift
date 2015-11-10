@@ -21,7 +21,7 @@ extension TestService {
         }
         self.clientDelegate?.servicesSignalProducer
             .reduceToServiceMatchingTestService(self)
-            .flatMap(FlattenStrategy.Latest) { service -> SignalProducer<NSNetService, NSError> in ServiceDelegate().resolveNetService(service, timeout: timeout) }
+            .flatMap(FlattenStrategy.Latest) { service -> ResolutionSignalProducerType in ServiceDelegate().resolveNetService(service, timeout: timeout) }
             .startWithCompleted({ expectation.fulfill() })
         if !self.clientDelegate!.isSearching {
             self.browser!.searchForServicesOfType(self.type, inDomain: "local")
@@ -36,7 +36,7 @@ extension TestService {
         }
         self.clientDelegate?.servicesSignalProducer
             .reduceToServiceMatchingTestService(self)
-            .flatMap(FlattenStrategy.Latest) { service -> SignalProducer<NSNetService, NSError> in ServiceDelegate().lookupTXTRecordForNetService(service) }
+            .flatMap(FlattenStrategy.Latest) { service -> DictionarySignalProducerType in ServiceDelegate().lookupTXTRecordForNetService(service) }
             .startWithCompleted({ expectation.fulfill() })
         if !self.clientDelegate!.isSearching {
             self.browser!.searchForServicesOfType(self.type, inDomain: "local")
