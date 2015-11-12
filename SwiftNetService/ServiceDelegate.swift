@@ -113,7 +113,7 @@ extension NSNetService {
 
 }
 
-class ServiceDelegate : NSObject, NSNetServiceDelegate {
+public class ServiceDelegate : NSObject, NSNetServiceDelegate {
 
   func resolveNetService(service: NSNetService, timeout: NSTimeInterval) -> ResolutionSignalProducerType {
     var result : ResolutionSignalProducerType
@@ -168,17 +168,17 @@ class ServiceDelegate : NSObject, NSNetServiceDelegate {
     return result
   }
   
-  func netServiceDidResolveAddress(sender: NSNetService) {
+  public func netServiceDidResolveAddress(sender: NSNetService) {
     sender.resolutionObserver!.sendNext(sender)
     sender.resolutionObserver!.sendCompleted()
     sender.isResolved = true
   }
 
-  func netService(sender: NSNetService, didUpdateTXTRecordData data: NSData) {
+  public func netService(sender: NSNetService, didUpdateTXTRecordData data: NSData) {
     sender.dictionaryObserver!.sendNext(sender)
   }
 
-  func netService(sender: NSNetService, didNotResolve errorDict: [String : NSNumber]) {
+  public func netService(sender: NSNetService, didNotResolve errorDict: [String : NSNumber]) {
     sender.resolutionObserver!.sendFailed(errorForErrorDictionary(errorDict))
   }
 
