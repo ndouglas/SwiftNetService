@@ -86,8 +86,10 @@ strip_invalid_archs() {
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "Pods-SwiftNetService-iOS/ReactiveCocoa.framework"
   install_framework "Pods-SwiftNetService-iOS/Result.framework"
+  install_framework "Pods-SwiftNetService-iOS/SwiftAssociatedObjects.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "Pods-SwiftNetService-iOS/ReactiveCocoa.framework"
   install_framework "Pods-SwiftNetService-iOS/Result.framework"
+  install_framework "Pods-SwiftNetService-iOS/SwiftAssociatedObjects.framework"
 fi

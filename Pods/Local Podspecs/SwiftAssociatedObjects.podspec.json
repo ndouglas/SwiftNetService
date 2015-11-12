@@ -1,0 +1,25 @@
+{
+  "name": "SwiftAssociatedObjects",
+  "version": "1.0.0",
+  "summary": "A microframework for resiliently supporting associated objects in Swift.",
+  "homepage": "https://github.com/ndouglas/SwiftAssociatedObjects",
+  "license": {
+    "type": "Public Domain",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Nathan Douglas": "github@tenesm.us"
+  },
+  "platforms": {
+    "ios": "8.0",
+    "osx": "10.10"
+  },
+  "source": {
+    "git": "https://github.com/ndouglas/SwiftAssociatedObjects.git",
+    "tag": "1.0.0"
+  },
+  "exclude_files": "SwiftAssociatedObjects/*Tests.swift",
+  "source_files": "SwiftAssociatedObjects/*.swift",
+  "frameworks": "Foundation",
+  "requires_arc": true
+}
