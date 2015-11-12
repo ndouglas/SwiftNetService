@@ -12,6 +12,7 @@ import ReactiveCocoa
 enum SwiftNetServiceError: ErrorType {
     case Unknown
     case CouldNotConnectStreams
+    case Error(error: NSError)
 }
 
 // Wraps a non-object value in an object so that we can store it with getAssociatedObject/setAssociatedObject.

@@ -67,6 +67,13 @@ extension NSStream {
       assert(self.streamEventObserver != nil)
     }
   }
+  
+  class func pipe() -> StreamTupleType {
+    var readStream: Unmanaged<CFReadStream>?
+    var writeStream: Unmanaged<CFWriteStream>?
+    CFStreamCreateBoundPair(nil, &readStream, &writeStream, 4096)
+    return (readStream!.takeUnretainedValue(), writeStream!.takeUnretainedValue())
+  }
 
 }
 
@@ -83,6 +90,7 @@ class StreamDelegate: NSObject, NSStreamDelegate {
           let (streamEventSignal, streamEventObserver) = StreamEventSignalType.pipe()
           streamEventSignal.observe(observer)
           stream.streamEventObserver = streamEventObserver
+          stream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSRunLoopCommonModes)
           stream.open()
           disposable.addDisposable({
             stream.close()
@@ -95,7 +103,25 @@ class StreamDelegate: NSObject, NSStreamDelegate {
   }
 
   func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
-    aStream.streamEventObserver!.sendNext((aStream, eventCode))
+    switch eventCode {
+      case NSStreamEvent.None:
+        break
+      case NSStreamEvent.OpenCompleted:
+        break
+      case NSStreamEvent.HasBytesAvailable:
+        fallthrough
+      case NSStreamEvent.HasSpaceAvailable:
+        aStream.streamEventObserver!.sendNext((aStream, eventCode))
+        break
+      case NSStreamEvent.ErrorOccurred:
+        aStream.streamEventObserver!.sendFailed(SwiftNetServiceError.Error(error: aStream.streamError!))
+        break
+      case NSStreamEvent.EndEncountered:
+        aStream.streamEventObserver!.sendCompleted()
+        break
+      default:
+        break
+    }
   }
 
 }
