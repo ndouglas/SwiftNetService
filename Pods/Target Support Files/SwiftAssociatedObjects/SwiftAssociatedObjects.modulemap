@@ -1,0 +1,6 @@
+framework module SwiftAssociatedObjects {
+  umbrella header "SwiftAssociatedObjects-umbrella.h"
+
+  export *
+  module * { export * }
+}

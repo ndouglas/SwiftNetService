@@ -3,7 +3,7 @@ inhibit_all_warnings!
 
 def shared_pods
 	pod 'ReactiveCocoa', :path=>'../ReactiveCocoa/ReactiveCocoa.podspec.json'
-	pod 'SwiftAssociatedObjects', :git->'https://github.com/ndouglas/SwiftAssociatedObjects'
+	pod 'SwiftAssociatedObjects', :git=>'https://github.com/ndouglas/SwiftAssociatedObjects'
 end
 
 target 'SwiftNetService-Mac' do
