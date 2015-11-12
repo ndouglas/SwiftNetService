@@ -9,11 +9,19 @@
 import Foundation
 import ReactiveCocoa
 
-typealias StreamEventSignalValueType = (NSStream, NSStreamEvent)
-typealias StreamEventSignalType = Signal<StreamEventSignalValueType, NSError>
-typealias StreamEventSignalProducerType = SignalProducer<StreamEventSignalValueType, NSError>
-typealias StreamEventObserverType = Observer<StreamEventSignalValueType, NSError>
-typealias StreamEventHandlerType = (StreamEventSignalValueType) -> ()
+// Stream tuple types.
+typealias StreamTupleType = (NSInputStream, NSOutputStream)
+typealias StreamTupleSignalType = ReactiveCocoa.Signal<StreamTupleType, SwiftNetServiceError>
+typealias StreamTupleSignalProducerType = ReactiveCocoa.SignalProducer<StreamTupleType, SwiftNetServiceError>
+typealias StreamTupleObserverType = ReactiveCocoa.Observer<StreamTupleType, SwiftNetServiceError>
+
+// Stream event types.
+typealias StreamEventType = (NSStream, NSStreamEvent)
+typealias StreamEventSignalType = ReactiveCocoa.Signal<StreamEventType, SwiftNetServiceError>
+typealias StreamEventSignalProducerType = ReactiveCocoa.SignalProducer<StreamEventType, SwiftNetServiceError>
+typealias StreamEventObserverType = ReactiveCocoa.Observer<StreamEventType, SwiftNetServiceError>
+typealias StreamEventSignalProducerTupleType = (StreamEventSignalProducerType, StreamEventSignalProducerType)
+typealias StreamEventSignalProducerTupleSignalProducerType = ReactiveCocoa.SignalProducer<StreamEventSignalProducerTupleType, SwiftNetServiceError>
 
 extension NSStream {
 

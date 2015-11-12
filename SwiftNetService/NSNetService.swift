@@ -9,6 +9,11 @@
 import Foundation
 import ReactiveCocoa
 
+enum SwiftNetServiceError: ErrorType {
+    case Unknown
+    case CouldNotConnectStreams
+}
+
 // Wraps a non-object value in an object so that we can store it with getAssociatedObject/setAssociatedObject.
 final class Lifted<ValueType> {
   let value: ValueType
@@ -133,37 +138,66 @@ extension NSNetService {
   /// Notice that this will replace the existing service delegate, if 
   /// there is one and it is not a SwiftNetService ServiceDelegate.
   func resolve(timeout: NSTimeInterval) -> ResolutionSignalProducerType {
-    if let theDelegate = self.delegate as? ServiceDelegate {
-      return theDelegate.resolveNetService(self, timeout:timeout)
-    } else {
-      return ServiceDelegate().resolveNetService(self, timeout:timeout)
-    }
+    let theDelegate = (self.delegate as? ServiceDelegate) ?? ServiceDelegate()
+    return theDelegate.resolveNetService(self, timeout:timeout)
   }
 
   /// Looks up the TXT record for the specified net service.
   /// Notice that this will replace the existing service delegate, if 
   /// there is one and it is not a SwiftNetService ServiceDelegate.
   func lookupTXTRecord() -> DictionarySignalProducerType {
-    if let theDelegate = self.delegate as? ServiceDelegate {
-      return theDelegate.lookupTXTRecordForNetService(self)
-    } else {
-      return ServiceDelegate().lookupTXTRecordForNetService(self)
+    let theDelegate = (self.delegate as? ServiceDelegate) ?? ServiceDelegate()
+    return theDelegate.lookupTXTRecordForNetService(self)
+  }
+  
+  /// Sets up publication and accepts connections, passing their 
+  /// events on signal producers.
+  /// Assumes we are not already published.
+  func acceptConnections() -> StreamEventSignalProducerTupleSignalProducerType {
+    let theDelegate = (self.delegate as? ServiceDelegate) ?? ServiceDelegate()
+    return theDelegate.acceptConnectionsToNetService(self)
+      .map { [weak self] tuple -> StreamEventSignalProducerTupleType in
+        return self!.setupStreams(tuple)
+      }
+  }
+
+  /// Connects to the net service, passing events on signal producers.
+  func connect() -> StreamEventSignalProducerTupleType {
+    let tuple: StreamTupleType
+    do {
+      try tuple = self.getStreams()
+      return self.setupStreams(tuple)
+    } catch SwiftNetServiceError.CouldNotConnectStreams {
+      let errorProducer = StreamEventSignalProducerType(error: SwiftNetServiceError.CouldNotConnectStreams)
+      return (errorProducer, errorProducer)
+    } catch {
+      let errorProducer = StreamEventSignalProducerType(error: SwiftNetServiceError.Unknown)
+      return (errorProducer, errorProducer)
     }
   }
 
-  func setupStreams(inputHandler: StreamEventHandlerType, outputHandler: StreamEventHandlerType) -> (Disposable?, Disposable?) {
+  /// Gets streams to connect to the service.
+  func getStreams() throws -> StreamTupleType {
     var inputStream: NSInputStream?
     var outputStream: NSOutputStream?
     self.getInputStream(&inputStream, outputStream: &outputStream)
-    var inputDisposable: Disposable?
-    var outputDisposable: Disposable?
-    if let inputStream = inputStream {
-      inputDisposable = StreamDelegate().openStream(inputStream).startWithNext(inputHandler)
+    guard let resultInputStream = inputStream else {
+      throw SwiftNetServiceError.CouldNotConnectStreams
     }
-    if let outputStream = outputStream {
-      outputDisposable = StreamDelegate().openStream(outputStream).startWithNext(outputHandler)
+    guard let resultOutputStream = outputStream else {
+      throw SwiftNetServiceError.CouldNotConnectStreams
     }
-    return (inputDisposable, outputDisposable)
+    return (resultInputStream, resultOutputStream)
+  }
+
+  /// Sets up streams and attaches signal producers to them.
+  func setupStreams(streams: StreamTupleType) -> StreamEventSignalProducerTupleType {
+    return self.setupStreams(streams.0, streams.1)
+  }
+
+  /// Sets up streams and attaches signal producers to them.
+  func setupStreams(inputStream: NSInputStream, outputStream: NSOutputStream) -> StreamEventSignalProducerTupleType {
+    return (StreamDelegate().openStream(inputStream), StreamDelegate().openStream(outputStream))
   }
 
 }

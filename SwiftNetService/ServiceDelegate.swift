@@ -24,6 +24,9 @@ extension NSNetService {
     static var netServiceResolutionObserverKey: Void?
     static var netServiceDictionarySignalProducerKey: Void?
     static var netServiceDictionaryObserverKey: Void?
+    static var netServiceStreamDelegateKey: Void?
+    static var netServiceStreamSignalProducerKey: Void?
+    static var netServiceStreamObserverKey: Void?
   }
 
   // We mark the net service as resolved after it's been resolved.
@@ -102,6 +105,43 @@ extension NSNetService {
     }
   }
 
+  // Retains the delegate so that it is not released prematurely.
+  var streamDelegate: ServiceDelegate! {
+    get {
+      return getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceStreamDelegateKey)
+    }
+    set(newValue) {
+      setAssociatedObject(self, value: newValue, associativeKey: &AssociatedKeys.netServiceStreamDelegateKey)
+      assert(self.streamDelegate != nil)
+    }
+  }
+
+  // The signal that passes the streams when the server is connected.
+  var streamSignalProducer: StreamTupleSignalProducerType? {
+    get {
+      return getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceStreamSignalProducerKey)
+    }
+    set(newValue) {
+      if let value = newValue {
+        setAssociatedObject(self, value: value, associativeKey: &AssociatedKeys.netServiceStreamSignalProducerKey)
+      }
+      assert(self.streamSignalProducer != nil)
+    }
+  }
+
+  // The sink that passes the streams when the server is connected.
+  var streamObserver: StreamTupleObserverType? {
+    get {
+      return getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceStreamObserverKey)
+    }
+    set(newValue) {
+      if let value = newValue {
+        setAssociatedObject(self, value: value, associativeKey: &AssociatedKeys.netServiceStreamObserverKey)
+      }
+      assert(self.streamObserver != nil)
+    }
+  }
+
   // Does this net service have a meaningful TXT record?
   func hasValidTXTRecordData() -> Bool {
     var result : Bool = false
@@ -132,9 +172,9 @@ class ServiceDelegate : NSObject, NSNetServiceDelegate {
           resolutionSignal.observe(observer)
           service.resolutionObserver = resolutionObserver
           service.resolveWithTimeout(timeout)
-          disposable.addDisposable({
+          disposable.addDisposable {
               service.stop()
-            })
+            }
         })
       service.resolutionSignalProducer = resolutionSignalProducer
       result = resolutionSignalProducer
@@ -158,12 +198,34 @@ class ServiceDelegate : NSObject, NSNetServiceDelegate {
           dictionarySignal.observe(observer)
           service.dictionaryObserver = dictionaryObserver
           service.startMonitoring()
-          disposable.addDisposable({
+          disposable.addDisposable {
               service.stop()
-            })
+            }
         })
       service.dictionarySignalProducer = dictionarySignalProducer
       result = dictionarySignalProducer
+    }
+    return result
+  }
+  
+  func acceptConnectionsToNetService(service: NSNetService) -> StreamTupleSignalProducerType {
+    var result: StreamTupleSignalProducerType
+    service.delegate = self
+    service.streamDelegate = self
+    service.publishWithOptions(NSNetServiceOptions.ListenForConnections)
+    if let streamSignalProducer = service.streamSignalProducer {
+      result = streamSignalProducer
+    } else {
+      let streamSignalProducer = StreamTupleSignalProducerType({ observer, disposable in
+          let (streamSignal, streamObserver) = StreamTupleSignalType.pipe()
+          streamSignal.observe(observer)
+          service.streamObserver = streamObserver
+          disposable.addDisposable {
+              service.stop()
+            }
+        })
+      service.streamSignalProducer = streamSignalProducer
+      result = streamSignalProducer
     }
     return result
   }
@@ -180,6 +242,10 @@ class ServiceDelegate : NSObject, NSNetServiceDelegate {
 
   func netService(sender: NSNetService, didNotResolve errorDict: [String : NSNumber]) {
     sender.resolutionObserver!.sendFailed(errorForErrorDictionary(errorDict))
+  }
+  
+  func netService(sender: NSNetService, didAcceptConnectionWithInputStream inputStream: NSInputStream, outputStream: NSOutputStream) {
+    sender.streamObserver!.sendNext((inputStream, outputStream))
   }
 
 }
