@@ -9,12 +9,6 @@
 import Foundation
 import ReactiveCocoa
 
-enum SwiftNetServiceError: ErrorType {
-    case Unknown
-    case CouldNotConnectStreams
-    case Error(error: NSError)
-}
-
 // Wraps a non-object value in an object so that we can store it with getAssociatedObject/setAssociatedObject.
 final class Lifted<ValueType> {
   let value: ValueType
@@ -151,56 +145,6 @@ extension NSNetService {
     return theDelegate.lookupTXTRecordForNetService(self)
   }
   
-  /// Sets up publication and accepts connections, passing their 
-  /// events on signal producers.
-  /// Assumes we are not already published.
-  func acceptConnections() -> StreamEventSignalProducerTupleSignalProducerType {
-    let theDelegate = (self.delegate as? ServiceDelegate) ?? ServiceDelegate()
-    return theDelegate.acceptConnectionsToNetService(self)
-      .map { [weak self] tuple -> StreamEventSignalProducerTupleType in
-        return self!.setupStreams(tuple)
-      }
-  }
-
-  /// Connects to the net service, passing events on signal producers.
-  func connect() -> StreamEventSignalProducerTupleType {
-    let tuple: StreamTupleType
-    do {
-      try tuple = self.getStreams()
-      return self.setupStreams(tuple)
-    } catch SwiftNetServiceError.CouldNotConnectStreams {
-      let errorProducer = StreamEventSignalProducerType(error: SwiftNetServiceError.CouldNotConnectStreams)
-      return (errorProducer, errorProducer)
-    } catch {
-      let errorProducer = StreamEventSignalProducerType(error: SwiftNetServiceError.Unknown)
-      return (errorProducer, errorProducer)
-    }
-  }
-
-  /// Gets streams to connect to the service.
-  func getStreams() throws -> StreamTupleType {
-    var inputStream: NSInputStream?
-    var outputStream: NSOutputStream?
-    self.getInputStream(&inputStream, outputStream: &outputStream)
-    guard let resultInputStream = inputStream else {
-      throw SwiftNetServiceError.CouldNotConnectStreams
-    }
-    guard let resultOutputStream = outputStream else {
-      throw SwiftNetServiceError.CouldNotConnectStreams
-    }
-    return (resultInputStream, resultOutputStream)
-  }
-
-  /// Sets up streams and attaches signal producers to them.
-  func setupStreams(streams: StreamTupleType) -> StreamEventSignalProducerTupleType {
-    return self.setupStreams(streams.0, streams.1)
-  }
-
-  /// Sets up streams and attaches signal producers to them.
-  func setupStreams(inputStream: NSInputStream, outputStream: NSOutputStream) -> StreamEventSignalProducerTupleType {
-    return (StreamDelegate().openStream(inputStream), StreamDelegate().openStream(outputStream))
-  }
-
 }
 
 func errorForErrorDictionary(errorDictionary : [String: NSNumber]) -> NSError {
