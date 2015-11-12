@@ -72,21 +72,20 @@ class StreamDelegate: NSObject, NSStreamDelegate {
       result = streamEventSignalProducer
     } else {
       let streamEventSignalProducer = StreamEventSignalProducerType({ observer, disposable in
-              let (streamEventSignal, streamEventObserver) = StreamEventSignalType.pipe()
-              streamEventSignal.observe(observer)
-              stream.streamEventObserver = streamEventObserver
-              stream.open()
-              disposable.addDisposable({
-                  stream.close()
-              })
+          let (streamEventSignal, streamEventObserver) = StreamEventSignalType.pipe()
+          streamEventSignal.observe(observer)
+          stream.streamEventObserver = streamEventObserver
+          stream.open()
+          disposable.addDisposable({
+            stream.close()
           })
+        })
       stream.streamEventSignalProducer = streamEventSignalProducer
       result = streamEventSignalProducer
-      
     }
     return result
   }
-  
+
   func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
     aStream.streamEventObserver!.sendNext((aStream, eventCode))
   }
