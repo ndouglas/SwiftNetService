@@ -15,39 +15,6 @@ typealias ResolutionObserverType = ReactiveCocoa.Observer<NSNetService, NSError>
 typealias DictionarySignalProducerType = ReactiveCocoa.SignalProducer<NSNetService, NSError>
 typealias DictionaryObserverType = ReactiveCocoa.Observer<NSNetService, NSError>
 
-// Wraps a non-object value in an object so that we can store it with getAssociatedObject/setAssociatedObject.
-final class Lifted<ValueType> {
-    let value: ValueType
-    init(_ x: ValueType) {
-        value = x
-    }
-}
-
-// A helper function to lift a non-object value to an object.
-private func lift<T>(x: T) -> Lifted<T>  {
-    return Lifted(x)
-}
-
-// A wrapper for objc_setAssociatedObject() that transparently handles non-objc values.
-func setAssociatedObject<ValueType>(object: AnyObject, value: ValueType, associativeKey: UnsafePointer<Void>) {
-    if let v: AnyObject = value as? AnyObject {
-        objc_setAssociatedObject(object, associativeKey, v, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-    } else {
-        objc_setAssociatedObject(object, associativeKey, lift(value), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-    }
-}
-
-// A wrapper for objc_getAssociatedObject() that transparently handles non-objc values.
-func getAssociatedObject<ValueType>(object: AnyObject, associativeKey: UnsafePointer<Void>) -> ValueType? {
-    if let v = objc_getAssociatedObject(object, associativeKey) as? ValueType {
-        return v
-    } else if let v = objc_getAssociatedObject(object, associativeKey) as? Lifted<ValueType> {
-        return v.value
-    } else {
-        return nil
-    }
-}
-
 extension NSNetService {
 
     private struct AssociatedKeys {
@@ -194,24 +161,6 @@ class ServiceDelegate : NSObject, NSNetServiceDelegate {
                     disposable.addDisposable({
                         service.stop()
                     })
-                })
-                .on(started: {
-                    print("Started")
-                }, event: { event in
-                    print("Event: \(event)")
-                }, failed: { error in
-                    print("Failed: \(error)")
-                }, completed: {
-                    print("Completed")
-                }, interrupted: {
-                    print("Interrupted")
-                }, terminated: {
-                    print("Terminated")
-                }, disposed: {
-                    print("Disposed")
-                }, next: { value in
-                    print("Next: \(value)")
-                    print("TXT: \(NSNetService.dictionaryFromTXTRecordData(value.TXTRecordData()!))")
                 })
             service.dictionarySignalProducer = dictionarySignalProducer
             result = dictionarySignalProducer
