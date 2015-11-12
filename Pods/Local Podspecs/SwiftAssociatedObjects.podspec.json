@@ -1,6 +1,6 @@
 {
   "name": "SwiftAssociatedObjects",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "summary": "A microframework for resiliently supporting associated objects in Swift.",
   "homepage": "https://github.com/ndouglas/SwiftAssociatedObjects",
   "license": {
@@ -16,7 +16,7 @@
   },
   "source": {
     "git": "https://github.com/ndouglas/SwiftAssociatedObjects.git",
-    "tag": "1.0.0"
+    "tag": "1.0.1"
   },
   "exclude_files": "SwiftAssociatedObjects/*Tests.swift",
   "source_files": "SwiftAssociatedObjects/*.swift",

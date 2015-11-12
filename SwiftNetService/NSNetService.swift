@@ -8,39 +8,7 @@
 
 import Foundation
 import ReactiveCocoa
-
-// Wraps a non-object value in an object so that we can store it with getAssociatedObject/setAssociatedObject.
-final class Lifted<ValueType> {
-  let value: ValueType
-  init(_ x: ValueType) {
-    self.value = x
-  }
-}
-
-// A helper function to lift a non-object value to an object.
-private func lift<T>(x: T) -> Lifted<T>  {
-  return Lifted(x)
-}
-
-// A wrapper for objc_setAssociatedObject() that transparently handles non-objc values.
-func setAssociatedObject<ValueType>(object: AnyObject, value: ValueType, associativeKey: UnsafePointer<Void>) {
-  if let v: AnyObject = value as? AnyObject {
-    objc_setAssociatedObject(object, associativeKey, v, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-  } else {
-    objc_setAssociatedObject(object, associativeKey, lift(value), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-  }
-}
-
-// A wrapper for objc_getAssociatedObject() that transparently handles non-objc values.
-func getAssociatedObject<ValueType>(object: AnyObject, associativeKey: UnsafePointer<Void>) -> ValueType? {
-  if let v = objc_getAssociatedObject(object, associativeKey) as? ValueType {
-    return v
-  } else if let v = objc_getAssociatedObject(object, associativeKey) as? Lifted<ValueType> {
-    return v.value
-  } else {
-    return nil
-  }
-}
+import SwiftAssociatedObjects
 
 extension NSNetService {
 
@@ -52,10 +20,10 @@ extension NSNetService {
   // The input stream.
   var inputStream: NSInputStream! {
     get {
-      return getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceInputStreamKey)
+      return SwiftAssociatedObjects.getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceInputStreamKey)
     }
     set(newValue) {
-      setAssociatedObject(self, value: newValue, associativeKey: &AssociatedKeys.netServiceInputStreamKey)
+      SwiftAssociatedObjects.setAssociatedObject(self, value: newValue, associativeKey: &AssociatedKeys.netServiceInputStreamKey)
       assert(self.inputStream != nil)
     }
   }
@@ -63,10 +31,10 @@ extension NSNetService {
   // The output stream.
   var outputStream: NSOutputStream! {
     get {
-      return getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceOutputStreamKey)
+      return SwiftAssociatedObjects.getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceOutputStreamKey)
     }
     set(newValue) {
-      setAssociatedObject(self, value: newValue, associativeKey: &AssociatedKeys.netServiceOutputStreamKey)
+      SwiftAssociatedObjects.setAssociatedObject(self, value: newValue, associativeKey: &AssociatedKeys.netServiceOutputStreamKey)
       assert(self.outputStream != nil)
     }
   }

@@ -11,7 +11,7 @@ PODS:
     - ReactiveCocoa/Core
     - Result (~> 0.6-beta.1)
   - Result (0.6.0-beta.6)
-  - SwiftAssociatedObjects (1.0.0)
+  - SwiftAssociatedObjects (1.0.1)
 
 DEPENDENCIES:
   - ReactiveCocoa (from `../ReactiveCocoa/ReactiveCocoa.podspec.json`)
@@ -25,12 +25,12 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   SwiftAssociatedObjects:
-    :commit: 60d9a36e934046d05215b45f6877d9374d7e07e1
+    :commit: 4792fe228b340cc822dbbc268937b6ee2d09a74e
     :git: https://github.com/ndouglas/SwiftAssociatedObjects
 
 SPEC CHECKSUMS:
   ReactiveCocoa: 1900c7d89027cbaef4882c48e75187c76201d29e
   Result: dc390d0b58f9ec43fcd536f1ebdd130803cc6cbc
-  SwiftAssociatedObjects: 52c5bf0f86b568c3632dbbfd26c6542406a46429
+  SwiftAssociatedObjects: 040e60920da3add71275a72e66b041a7c4cdb434
 
 COCOAPODS: 0.39.0

@@ -9,6 +9,7 @@
 import Foundation
 import ReactiveCocoa
 import ObjectiveC
+import SwiftAssociatedObjects
 
 typealias ResolutionSignalProducerType = ReactiveCocoa.SignalProducer<NSNetService, NSError>
 typealias ResolutionObserverType = ReactiveCocoa.Observer<NSNetService, NSError>
@@ -29,23 +30,23 @@ extension NSNetService {
   // We mark the net service as resolved after it's been resolved.
   var isResolved : Bool {
   get {
-    guard let result = objc_getAssociatedObject(self, &AssociatedKeys.netServiceResolutionCompleteKey) as? Bool else {
+    guard let result = SwiftAssociatedObjects.objc_getAssociatedObject(self, &AssociatedKeys.netServiceResolutionCompleteKey) as? Bool else {
       return false
     }
     return result
   }
     set(newValue) {
-      objc_setAssociatedObject(self, &AssociatedKeys.netServiceResolutionCompleteKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+      SwiftAssociatedObjects.objc_setAssociatedObject(self, &AssociatedKeys.netServiceResolutionCompleteKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
   }
 
   // A strong reference to the delegate so that it isn't released prematurely.
   var resolutionDelegate: ServiceDelegate! {
     get {
-      return getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceResolutionDelegateKey)
+      return SwiftAssociatedObjects.getAssociatedObject(self, associativeKey: &AssociatedKeys.netServiceResolutionDelegateKey)
     }
     set(newValue) {
-      setAssociatedObject(self, value: newValue, associativeKey: &AssociatedKeys.netServiceResolutionDelegateKey)
+      SwiftAssociatedObjects.setAssociatedObject(self, value: newValue, associativeKey: &AssociatedKeys.netServiceResolutionDelegateKey)
       assert(self.resolutionDelegate != nil)
     }
   }

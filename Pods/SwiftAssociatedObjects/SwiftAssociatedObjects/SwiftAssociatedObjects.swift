@@ -23,7 +23,7 @@ private func lift<T>(x: T) -> SwiftAssociatedObjects.Lifted<T>  {
 }
 
 // A wrapper for objc_setAssociatedObject() that transparently handles non-objc values.
-func setAssociatedObject<ValueType>(object: AnyObject, value: ValueType, associativeKey: UnsafePointer<Void>) {
+public func setAssociatedObject<ValueType>(object: AnyObject, value: ValueType, associativeKey: UnsafePointer<Void>) {
   if let v: AnyObject = value as? AnyObject {
     objc_setAssociatedObject(object, associativeKey, v, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
   } else {
@@ -32,7 +32,7 @@ func setAssociatedObject<ValueType>(object: AnyObject, value: ValueType, associa
 }
 
 // A wrapper for objc_getAssociatedObject() that transparently handles non-objc values.
-func getAssociatedObject<ValueType>(object: AnyObject, associativeKey: UnsafePointer<Void>) -> ValueType? {
+public func getAssociatedObject<ValueType>(object: AnyObject, associativeKey: UnsafePointer<Void>) -> ValueType? {
   if let v = objc_getAssociatedObject(object, associativeKey) as? ValueType {
     return v
   } else if let v = objc_getAssociatedObject(object, associativeKey) as? SwiftAssociatedObjects.Lifted<ValueType> {
